@@ -4,11 +4,11 @@ import cv2
 
 def capture_screen(region=None):
     with mss.mss() as sct:
-        # Define la región de captura (puedes ajustarla al área del juego)
-        monitor = region if region else sct.monitors[1]
+        # Captura el monitor completo
+        monitor = region if region else sct.monitors[2]  # Cambia el índice si usas otro monitor
         screenshot = sct.grab(monitor)
 
-        # Convierte la imagen a un formato compatible con OpenCV
+        # Convierte la imagen a formato OpenCV
         frame = np.array(screenshot)
         frame = cv2.cvtColor(frame, cv2.COLOR_BGRA2BGR)
 
