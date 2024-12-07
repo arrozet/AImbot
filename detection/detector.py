@@ -1,7 +1,7 @@
 from ultralytics import YOLO  # YOLOv8 library for object detection.
 
 # Load the YOLO model with a pre-trained weight file.
-model = YOLO('yolov8n.pt')  # Replace 'yolov8n.pt' with your desired YOLO model.
+model = YOLO('yolov8s.pt')  # Replace 'yolov8n.pt' with your desired YOLO model.
 
 def detect_targets(frame):
     """
@@ -21,9 +21,15 @@ def detect_targets(frame):
     for box in results[0].boxes.data:
         # Extract bounding box coordinates, confidence, and class index.
         x_min, y_min, x_max, y_max, conf, cls = box.tolist()
-        
+
         # Filter for class "person" (class index 0) with confidence above 0.3.
         if int(cls) == 0 and conf > 0.3:
-            detections.append(((int(x_min), int(y_min), int(x_max), int(y_max)), conf, model.names[int(cls)]))
+            width = x_max - x_min
+            height = y_max - y_min
+            aspect_ratio = width / height
+
+            # Filter detections based on realistic aspect ratios and minimum sizes.
+            if 0.3 < aspect_ratio < 3 and width > 20 and height > 40:
+                detections.append(((int(x_min), int(y_min), int(x_max), int(y_max)), conf, model.names[int(cls)]))
 
     return detections

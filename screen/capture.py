@@ -22,4 +22,9 @@ def capture_screen(region=None):
         frame = np.array(screenshot)  # Convert to NumPy array.
         frame = cv2.cvtColor(frame, cv2.COLOR_BGRA2BGR)  # Convert from BGRA to BGR.
 
+        # Apply histogram equalization for better contrast (optional but lightweight).
+        frame_yuv = cv2.cvtColor(frame, cv2.COLOR_BGR2YUV)
+        frame_yuv[:, :, 0] = cv2.equalizeHist(frame_yuv[:, :, 0])
+        frame = cv2.cvtColor(frame_yuv, cv2.COLOR_YUV2BGR)
+
         return frame
