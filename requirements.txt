@@ -1,0 +1,9 @@
+mss==6.1.0          # For capturing the screen
+numpy==1.24.3       # For handling image data
+opencv-python==4.5.5.64  # For image processing and visualization
+ultralytics==8.0.20 # For using YOLOv8 in object detection
+pynput==1.7.6       # For mouse control
+
+---
+Just put in your terminal
+pip install -r requirements.txt

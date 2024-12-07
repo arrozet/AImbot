@@ -1,38 +1,46 @@
-from screen.capture import capture_screen
-from detection.detector import detect_targets
-from control.mouse import aim_and_shoot
-import cv2
+from screen.capture import capture_screen  # Module for screen capturing.
+from detection.detector import detect_targets  # Module for object detection.
+from control.mouse import aim_and_shoot  # Module to control the mouse actions.
+import cv2  # OpenCV library for image processing and visualization.
 
 def main():
-    print("Iniciando detección en tiempo real. Presiona 'q' para salir.")
+    """
+    Main function for running real-time object detection and interaction.
+    - Captures frames from the screen in real-time.
+    - Detects objects using a YOLO model.
+    - Simulates aiming and shooting at detected targets.
+    - Displays processed frames with visual overlays.
+    """
+    print("Starting real-time detection. Press 'q' to quit.")
 
     while True:
-        # Captura el frame de la pantalla completa
-        frame = capture_screen()  # Captura la pantalla en resolución completa (1920x1080)
+        # Capture the entire screen at full resolution.
+        frame = capture_screen()  # Returns a frame in 1920x1080 resolution.
 
-        # Detecta los objetivos directamente en la resolución completa
+        # Detect targets within the captured frame.
         detections = detect_targets(frame)
 
         for detection in detections:
-            # Extrae el bounding box y la confianza
+            # Extract bounding box coordinates, confidence, and class label.
             (x_min, y_min, x_max, y_max), conf, cls = detection
 
-            # Apunta y dispara directamente
+            # Simulate aiming and shooting at the detected target.
             aim_and_shoot(((x_min, y_min, x_max, y_max), conf))
 
-            # Dibuja el bounding box en el frame capturado
+            # Draw bounding box on the captured frame.
             cv2.rectangle(frame, (x_min, y_min), (x_max, y_max), (0, 255, 0), 2)
-            # Añade la clase y la confianza como texto
+            # Add class and confidence as text near the bounding box.
             label = f"{cls}: {conf:.2f}"
             cv2.putText(frame, label, (x_min, y_min - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
 
-        # Muestra el frame con las detecciones
-        cv2.imshow("Detección en tiempo real", frame)
+        # Display the frame with detections in a window.
+        cv2.imshow("Real-Time Detection", frame)
 
-        # Salir del programa con 'q'
+        # Exit the program when 'q' is pressed.
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
+    # Clean up windows once the loop ends.
     cv2.destroyAllWindows()
 
 if __name__ == "__main__":

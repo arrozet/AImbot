@@ -1,23 +1,25 @@
-from pynput.mouse import Controller, Button
+from pynput.mouse import Controller, Button  # Library for mouse control.
 
+# Initialize a mouse controller instance.
 mouse = Controller()
 
 def aim_and_shoot(target):
     """
-    Mueve el ratón al centro del bounding box detectado y simula un disparo.
-    
-    Parámetros:
-    - target: Una tupla ((x_min, y_min, x_max, y_max), conf) con las coordenadas del bounding box y la confianza.
+    Moves the mouse to the center of a detected bounding box and simulates a click.
+
+    Parameters:
+    - target: A tuple ((x_min, y_min, x_max, y_max), conf) containing the bounding box coordinates
+              and the confidence of the detection.
     """
-    # Extrae las coordenadas del bounding box
+    # Extract bounding box coordinates.
     (x_min, y_min, x_max, y_max), _ = target
 
-    # Calcula el centro del bounding box
+    # Calculate the center of the bounding box.
     target_x = (x_min + x_max) // 2
     target_y = (y_min + y_max) // 2
 
-    # Mueve el ratón al centro del bounding box
+    # Move the mouse to the center of the bounding box.
     mouse.position = (target_x, target_y)
 
-    # Simula el clic izquierdo (descomenta si lo necesitas)
+    # Simulate a left mouse click (uncomment if needed).
     # mouse.click(Button.left, 1)
