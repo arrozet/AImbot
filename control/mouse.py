@@ -19,7 +19,7 @@ def aim_and_shoot(target):
     target_y = (y_min + y_max) // 2
 
     # Move the mouse to the center of the bounding box.
-    mouse.position = (target_x, target_y)
+    #mouse.position = (target_x, target_y)
 
     # Simulate a left mouse click (uncomment if needed).
     # mouse.click(Button.left, 1)

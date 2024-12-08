@@ -1,30 +1,51 @@
-import mss  # Library for screen capturing.
-import numpy as np  # Library for handling image arrays.
-import cv2  # OpenCV library for image processing.
+import bettercam
+import numpy as np
+import cv2
+import torch
 
-def capture_screen(region=None):
+# Inicializa BetterCam
+camera = bettercam.create()
+
+def capture_screen(region=None, use_mask=False, mask_coords=None, target_size=(640, 640)):
     """
-    Captures a screenshot of the entire screen or a specified region.
+    Captura un frame de la pantalla utilizando BetterCam y aplica preprocesamiento.
 
     Parameters:
-    - region: A dictionary defining the region to capture (e.g., {'top': 0, 'left': 0, 'width': 800, 'height': 600}).
-              If None, it defaults to the second monitor.
+    - region: Región específica para capturar (x, y, width, height). Si None, captura toda la pantalla.
+    - use_mask: Si True, aplica una máscara para eliminar áreas no relevantes.
+    - mask_coords: Coordenadas absolutas de la máscara (x_start, y_start, x_end, y_end).
+    - target_size: Tamaño al que se debe redimensionar la imagen (width, height).
 
     Returns:
-    - frame: A NumPy array representing the captured screen image in BGR format for OpenCV.
+    - frame_original: Imagen original capturada (NumPy array).
+    - frame_processed: Imagen procesada lista para el modelo (tensor de PyTorch).
     """
-    with mss.mss() as sct:
-        # Define the monitor or region to capture.
-        monitor = region if region else sct.monitors[2]  # Defaults to monitor 2.
-        screenshot = sct.grab(monitor)  # Capture the screen or region.
+    try:
+        # Captura la pantalla
+        frame = camera.grab(region=region)
+        if frame is None:
+            return None, None
 
-        # Convert the screenshot to a format usable by OpenCV.
-        frame = np.array(screenshot)  # Convert to NumPy array.
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGRA2BGR)  # Convert from BGRA to BGR.
+        # Convertir a NumPy
+        frame_original = np.array(frame, dtype=np.uint8)
 
-        # Apply histogram equalization for better contrast (optional but lightweight).
-        frame_yuv = cv2.cvtColor(frame, cv2.COLOR_BGR2YUV)
-        frame_yuv[:, :, 0] = cv2.equalizeHist(frame_yuv[:, :, 0])
-        frame = cv2.cvtColor(frame_yuv, cv2.COLOR_YUV2BGR)
+        # Aplica máscara si se especifica
+        if use_mask and mask_coords is not None:
+            x_start, y_start, x_end, y_end = mask_coords
+            frame_original[y_start:y_end, x_start:x_end] = 0  # Bloquea la región especificada
 
-        return frame
+        # Redimensionar para el modelo
+        frame_resized = cv2.resize(frame_original, target_size)
+
+        # Normalizar y convertir a tensor
+        frame_processed = torch.from_numpy(frame_resized).float().div(255).permute(2, 0, 1)
+        frame_processed = frame_processed.unsqueeze(0)  # Añadir batch dimension
+
+        return frame_original, frame_processed
+    except Exception as e:
+        print(f"Error en capture_screen: {e}")
+        return None, None
+
+
+
+

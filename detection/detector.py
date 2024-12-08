@@ -1,35 +1,27 @@
-from ultralytics import YOLO  # YOLOv8 library for object detection.
+from ultralytics import YOLO
 
-# Load the YOLO model with a pre-trained weight file.
-model = YOLO('yolov8s.pt')  # Replace 'yolov8n.pt' with your desired YOLO model.
+# Cargar el modelo YOLO
+model = YOLO('yolov8n.pt')  # Modelo ligero para inferencia rápida
+model.to('cpu')  # Ejecutar en CPU
 
 def detect_targets(frame):
     """
-    Performs object detection on a given frame using the YOLOv8 model.
+    Detecta personas en un frame utilizando YOLOv8.
 
     Parameters:
-    - frame: A NumPy array representing the image to process.
+    - frame: Imagen en formato NumPy.
 
     Returns:
-    - detections: A list of tuples with detected objects in the format:
-                  ((x_min, y_min, x_max, y_max), confidence, class_label).
+    - detections: Lista de detecciones con formato ((x_min, y_min, x_max, y_max), confidence, class_label).
     """
-    # Perform detection on the input frame with a confidence threshold of 0.3.
-    results = model.predict(source=frame, conf=0.3)
+    # Realizar detección solo para la clase 'person' (clase 0)
+    results = model.predict(source=frame, conf=0.3, classes=[0])  # Filtra solo personas
     detections = []
 
     for box in results[0].boxes.data:
-        # Extract bounding box coordinates, confidence, and class index.
+        # Extraer coordenadas, confianza y clase
         x_min, y_min, x_max, y_max, conf, cls = box.tolist()
-
-        # Filter for class "person" (class index 0) with confidence above 0.3.
-        if int(cls) == 0 and conf > 0.3:
-            width = x_max - x_min
-            height = y_max - y_min
-            aspect_ratio = width / height
-
-            # Filter detections based on realistic aspect ratios and minimum sizes.
-            if 0.3 < aspect_ratio < 3 and width > 20 and height > 40:
-                detections.append(((int(x_min), int(y_min), int(x_max), int(y_max)), conf, model.names[int(cls)]))
+        if conf > 0.3:  # Aplicar umbral adicional
+            detections.append(((int(x_min), int(y_min), int(x_max), int(y_max)), conf, model.names[int(cls)]))
 
     return detections
