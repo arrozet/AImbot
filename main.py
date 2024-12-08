@@ -10,36 +10,35 @@ def main():
 
     # Configuración de la pantalla y del modelo
     screen_size = (1920, 1080)  # Resolución completa de la pantalla
-    region = None  # Captura toda la pantalla
     target_size = (640, 640)  # Tamaño de entrada del modelo
+    screen_center = (target_size[0] // 2, target_size[1] // 2)  # Centro de la imagen procesada
 
     # Coordenadas de la máscara (ajusta según sea necesario)
     # x_start, y_start, x_end, y_end
-    mask_coords = (1080, 600, 1680, 1070)  # Ejemplo de máscara en la zona del arma y HUD
+    weapon_mask = (1080, 600, 1680, 1070)  # Weapon mask
 
     frame_count = 0
     start_time = time.time()
 
     while True:
-        # Captura el frame original y el frame procesado con la máscara aplicada
-        frame_original, frame_processed = capture_screen(
-            region=region, use_mask=True, mask_coords=mask_coords, target_size=target_size
-        )
+         # Captura el frame original y el frame procesado
+        frame_original, frame_processed = capture_screen(region=None, use_mask=True, mask_coords=weapon_mask, target_size=target_size)
         if frame_original is None or frame_processed is None:
             continue
 
-        # Detecta objetos en el frame procesado
-        detections = detect_targets(frame_processed)
+        # Detecta objetos ordenados por distancia
+        detections = detect_targets(frame_processed, screen_center=screen_center)
 
-        # Dibuja detecciones en el frame original
+
+         # Procesa y dibuja las detecciones
         for detection in detections:
-            (x_min, y_min, x_max, y_max), conf, cls = detection
+            (x_min, y_min, x_max, y_max), conf, cls, _ = detection
 
-            # Mapea las coordenadas desde el frame redimensionado (target_size) al original
-            mapped_x_min, mapped_y_min = map_coordinates(target_size, frame_original.shape[1::-1], (x_min, y_min))
-            mapped_x_max, mapped_y_max = map_coordinates(target_size, frame_original.shape[1::-1], (x_max, y_max))
+            # Mapea las coordenadas desde 640x640 al tamaño original
+            mapped_x_min, mapped_y_min = map_coordinates(target_size, screen_size, (x_min, y_min))
+            mapped_x_max, mapped_y_max = map_coordinates(target_size, screen_size, (x_max, y_max))
 
-            # Dibujar bounding boxes en el frame original
+            # Dibuja las bounding boxes en la imagen original
             cv2.rectangle(frame_original, (mapped_x_min, mapped_y_min), (mapped_x_max, mapped_y_max), (0, 255, 0), 2)
             label = f"{cls}: {conf:.2f}"
             cv2.putText(

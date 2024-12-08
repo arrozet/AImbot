@@ -34,14 +34,19 @@ def capture_screen(region=None, use_mask=False, mask_coords=None, target_size=(6
             x_start, y_start, x_end, y_end = mask_coords
             frame_original[y_start:y_end, x_start:x_end] = 0  # Bloquea la región especificada
 
+        # Ecualiza el histograma del canal de luminosidad
+        frame_yuv = cv2.cvtColor(frame_original, cv2.COLOR_BGR2YUV)
+        frame_yuv[:, :, 0] = cv2.equalizeHist(frame_yuv[:, :, 0])  # Ecualiza solo el canal Y
+        frame_equalized = cv2.cvtColor(frame_yuv, cv2.COLOR_YUV2BGR)
+
         # Redimensionar para el modelo
-        frame_resized = cv2.resize(frame_original, target_size)
+        frame_resized = cv2.resize(frame_equalized, target_size)
 
         # Normalizar y convertir a tensor
         frame_processed = torch.from_numpy(frame_resized).float().div(255).permute(2, 0, 1)
         frame_processed = frame_processed.unsqueeze(0)  # Añadir batch dimension
 
-        return frame_original, frame_processed
+        return frame_equalized, frame_processed
     except Exception as e:
         print(f"Error en capture_screen: {e}")
         return None, None

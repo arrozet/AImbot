@@ -4,24 +4,37 @@ from ultralytics import YOLO
 model = YOLO('sunxds_0.5.6.pt')  # Modelo ligero para inferencia rápida
 model.to('cpu')  # Ejecutar en CPU
 
-def detect_targets(frame):
+def detect_targets(frame, screen_center=(320, 320)):
     """
-    Detecta personas en un frame utilizando YOLOv8.
+    Detecta personas en un frame utilizando YOLOv8 y las ordena por cercanía al centro de la imagen procesada.
 
     Parameters:
-    - frame: Imagen en formato NumPy.
+    - frame: Imagen en formato NumPy o tensor procesado.
+    - screen_center: Coordenadas (x, y) del punto de referencia en la imagen redimensionada.
 
     Returns:
-    - detections: Lista de detecciones con formato ((x_min, y_min, x_max, y_max), confidence, class_label).
+    - detections: Lista de detecciones ordenadas por distancia en formato:
+                  ((x_min, y_min, x_max, y_max), confidence, class_label, distance).
     """
-    # Realizar detección solo para la clase 'person' (clase 0)
-    results = model.predict(source=frame, conf=0.3, classes=[0])  # Filtra solo personas
+    results = model.predict(source=frame, conf=0.3, classes=[0])  # Detecta solo personas
     detections = []
 
-    for box in results[0].boxes.data:
-        # Extraer coordenadas, confianza y clase
-        x_min, y_min, x_max, y_max, conf, cls = box.tolist()
-        if conf > 0.3:  # Aplicar umbral adicional
-            detections.append(((int(x_min), int(y_min), int(x_max), int(y_max)), conf, model.names[int(cls)]))
+    ref_x, ref_y = screen_center  # Centro de referencia en la imagen 640x640
 
-    return detections
+    for box in results[0].boxes.data:
+        x_min, y_min, x_max, y_max, conf, cls = box.tolist()
+
+        # Calcular el centro del bounding box
+        center_x = (x_min + x_max) / 2
+        center_y = (y_min + y_max) / 2
+
+        # Calcular la distancia al centro de la pantalla redimensionada
+        distance = ((center_x - ref_x) ** 2 + (center_y - ref_y) ** 2) ** 0.5
+
+        # Guardar detección con la distancia calculada
+        detections.append(((int(x_min), int(y_min), int(x_max), int(y_max)), conf, model.names[int(cls)], distance))
+
+    # Ordenar las detecciones por distancia
+    detections_sorted = sorted(detections, key=lambda d: d[3])  # Ordenar por distancia (índice 3)
+
+    return detections_sorted
