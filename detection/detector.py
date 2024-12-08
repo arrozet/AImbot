@@ -1,7 +1,7 @@
 from ultralytics import YOLO
 
 # Cargar el modelo YOLO
-model = YOLO('yolov8n.pt')  # Modelo ligero para inferencia rápida
+model = YOLO('sunxds_0.5.6.pt')  # Modelo ligero para inferencia rápida
 model.to('cpu')  # Ejecutar en CPU
 
 def detect_targets(frame):
