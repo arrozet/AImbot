@@ -5,21 +5,20 @@ mouse = Controller()
 
 def aim_and_shoot(target):
     """
-    Moves the mouse to the center of a detected bounding box and simulates a click.
+    Moves the mouse to the specified coordinates and simulates a click.
 
     Parameters:
-    - target: A tuple ((x_min, y_min, x_max, y_max), conf) containing the bounding box coordinates
-              and the confidence of the detection.
+    - target: A tuple (x, y) representing the target coordinates.
     """
-    # Extract bounding box coordinates.
-    (x_min, y_min, x_max, y_max), _ = target
+    if not isinstance(target, tuple) or len(target) != 2:
+        raise ValueError("Target must be a tuple with two elements: (x, y).")
 
-    # Calculate the center of the bounding box.
-    target_x = (x_min + x_max) // 2
-    target_y = (y_min + y_max) // 2
+    x, y = target  # Unpack the target coordinates
 
-    # Move the mouse to the center of the bounding box.
-    #mouse.position = (target_x, target_y)
+    # Move the mouse to the specified coordinates.
+    mouse.position = (x, y)
 
-    # Simulate a left mouse click (uncomment if needed).
-    # mouse.click(Button.left, 1)
+    # Simulate a left mouse click.
+    #mouse.click(Button.left, 1)
+
+    print(f"Moved to ({x}, {y}) and clicked.")

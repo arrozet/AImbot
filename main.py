@@ -1,9 +1,8 @@
 from screen.capture import capture_screen
-from detection.detector import detect_targets
+from detection.detector import detect_targets, detect_head
 from control.mouse import aim_and_shoot
 from utils.transformations import map_coordinates
 import cv2
-import time
 
 def print_performance_summary(total_inference_time, frame_count):
     """
@@ -52,7 +51,7 @@ def main():
 
          # Procesa y dibuja las detecciones
         for detection in detections:
-            (x_min, y_min, x_max, y_max), conf, cls, _ = detection
+            (x_min, y_min, x_max, y_max), conf, cls, _, head_position = detection
 
             # Mapea las coordenadas desde 640x640 al tamaño original
             mapped_x_min, mapped_y_min = map_coordinates(target_size, screen_size, (x_min, y_min))
@@ -65,6 +64,27 @@ def main():
                 frame_original, label, (mapped_x_min, mapped_y_min - 10),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1
             )
+
+            head_x, head_y = -1, -1
+
+            if head_position:
+                # Si se detectó la cabeza, dibuja el punto
+                mapped_head_x, mapped_head_y = map_coordinates(target_size, screen_size, head_position)
+                cv2.circle(frame_original, (mapped_head_x, mapped_head_y), 5, (0, 255, 0), -1)
+                head_x = mapped_head_x
+                head_y = mapped_head_y
+            else:
+                # Usa SIFT como respaldo
+                sift_position = detect_head(frame_processed, (mapped_x_min, mapped_y_min, mapped_x_max, mapped_y_max))
+                if sift_position:
+                    mapped_sift_x, mapped_sift_y = map_coordinates(target_size, screen_size, sift_position)
+                    cv2.circle(frame_original, (mapped_sift_x, mapped_sift_y), 5, (0, 0, 255), -1)
+                    head_x = mapped_sift_x
+                    head_y = mapped_sift_y
+
+            aim_and_shoot((head_x, head_y))
+            
+            
 
         # Muestra el frame original completo
         cv2.imshow("Real-Time Detection", frame_original)
