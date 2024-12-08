@@ -17,8 +17,10 @@ def detect_targets(frame, screen_center=(320, 320)):
                   ((x_min, y_min, x_max, y_max), confidence, class_label, distance).
     """
     results = model.predict(source=frame, conf=0.3, classes=[0])  # Detecta solo personas
-    detections = []
+    stats = results[0].speed  # Extraer tiempos de procesamiento (ms)
+    inference_time = stats['inference'] / 1000.0  # Convertir a segundos
 
+    detections = []
     ref_x, ref_y = screen_center  # Centro de referencia en la imagen 640x640
 
     for box in results[0].boxes.data:
@@ -37,4 +39,4 @@ def detect_targets(frame, screen_center=(320, 320)):
     # Ordenar las detecciones por distancia
     detections_sorted = sorted(detections, key=lambda d: d[3])  # Ordenar por distancia (índice 3)
 
-    return detections_sorted
+    return detections_sorted, inference_time
