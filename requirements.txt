@@ -1,9 +1,10 @@
-mss==6.1.0          # For capturing the screen
-numpy==1.24.3       # For handling image data
-opencv-python==4.5.5.64  # For image processing and visualization
-ultralytics==8.0.20 # For using YOLOv8 in object detection
-pynput==1.7.6       # For mouse control
-
----
-Just put in your terminal
-pip install -r requirements.txt
+opencv-python               # Library for computer vision and image processing (with GUI support)
+opencv-python-headless      # Lightweight version of OpenCV for headless systems (no GUI support)
+torch==2.0.1+cu118          # PyTorch library for deep learning with CUDA 11.8 support
+torchvision==0.15.2+cu118   # Image processing library for PyTorch with CUDA 11.8 support
+torchaudio==2.0.2+cu118     # Audio processing library for PyTorch with CUDA 11.8 support
+ultralytics                 # Library for YOLO models and real-time object detection
+numpy                       # Fundamental package for scientific computing and arrays
+bettercam                   # Custom library for screen capture (specific to this project)
+pynput                      # Library to control and monitor the mouse and keyboard
+matplotlib                  # Library for creating visualizations and plots

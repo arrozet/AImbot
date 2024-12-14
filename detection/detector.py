@@ -1,51 +1,70 @@
 from ultralytics import YOLO
 import cv2
 import numpy as np
+import torch
 
-# Cargar el modelo YOLO
-model = YOLO('sunxds_0.5.6.pt')  # Modelo ligero para inferencia rápida
-model.to('cpu')  # Ejecutar en CPU
+# Load the YOLO model
+model = YOLO('sunxds_0.5.6.pt')  # Lightweight model for fast inference
+
+# Check if CUDA is available and move the model to the appropriate device
+if torch.cuda.is_available():
+    print("CUDA is available. Using GPU.")
+    model.to('cuda')  # Move the model to the GPU
+else:
+    print("CUDA is not available. Using CPU.")
+    model.to('cpu')  # Keep the model on the CPU
+
+# Log which device the model is on
+print(f"Model is on device: {next(model.parameters()).device}")
+
 
 def detect_targets(frame, screen_center=(320, 320)):
     """
-    Detecta personas en un frame utilizando YOLOv8 y las ordena por cercanía al centro de la imagen procesada.
+    Detects targets in a frame using YOLOv8 and sorts them by proximity to the center of the processed image.
 
     Parameters:
-    - frame: Imagen en formato NumPy o tensor procesado.
-    - screen_center: Coordenadas (x, y) del punto de referencia en la imagen redimensionada.
+    - frame: Image in NumPy or processed tensor format.
+    - screen_center: Tuple (x, y) representing the reference point in the resized image.
 
     Returns:
-    - detections: Lista de detecciones ordenadas por distancia en formato:
+    - detections: List of detections sorted by distance in the format:
                   ((x_min, y_min, x_max, y_max), confidence, class_label, distance).
+    - inference_time: Time taken for model inference in seconds.
     """
-    results = model.predict(source=frame, conf=0.3, classes=[0,7])  # Detecta personas (0) y cabezas (7)
-    stats = results[0].speed  # Extraer tiempos de procesamiento (ms)
-    inference_time = stats['inference'] / 1000.0  # Convertir a segundos
+    # Move the frame to the GPU if CUDA is available
+    if torch.cuda.is_available():
+        frame = frame.to('cuda')
+
+    # Perform inference using the YOLO model
+    results = model.predict(source=frame, conf=0.3, classes=[0, 7])  # Detect persons (0) and heads (7)
+    stats = results[0].speed  # Extract processing times (ms)
+    inference_time = stats['inference'] / 1000.0  # Convert milliseconds to seconds
 
     detections = []
-    ref_x, ref_y = screen_center  # Centro de referencia en la imagen 640x640
+    ref_x, ref_y = screen_center  # Center of reference in the resized image (640x640)
 
-    # Separar detecciones de personas y cabezas
+    # Separate detections into persons and heads
     person_boxes = []
     head_boxes = []
 
+    # Parse detections and categorize them
     for box in results[0].boxes.data:
         x_min, y_min, x_max, y_max, conf, cls = box.tolist()
-        if int(cls) == 0:  # Clase persona
+        if int(cls) == 0:  # Class: Person
             person_boxes.append(((int(x_min), int(y_min), int(x_max), int(y_max)), conf))
-        elif int(cls) == 7:  # Clase cabeza
+        elif int(cls) == 7:  # Class: Head
             head_boxes.append(((int(x_min), int(y_min), int(x_max), int(y_max)), conf))
     
-    # Procesar cada persona y buscar cabezas asociadas
+    # Match persons with detected heads
     for (x_min, y_min, x_max, y_max), conf in person_boxes:
-        # Calcular el centro del bounding box de la persona
+        # Calculate the center of the bounding box for the person
         center_x = (x_min + x_max) / 2
         center_y = (y_min + y_max) / 2
 
-        # Calcular la distancia al centro de la pantalla redimensionada
+        # Compute the distance to the center of the resized screen
         distance = ((center_x - ref_x) ** 2 + (center_y - ref_y) ** 2) ** 0.5
 
-        # Buscar una cabeza dentro del bounding box de la persona
+        # Search for a head within the bounding box of the person
         head_position = None
         for (hx_min, hy_min, hx_max, hy_max), h_conf in head_boxes:
             if x_min <= hx_min <= x_max and y_min <= hy_min <= y_max:
@@ -54,13 +73,14 @@ def detect_targets(frame, screen_center=(320, 320)):
                 head_position = (head_x, head_y)
                 break
 
-        # Guardar detección completa
+        # Save the full detection
         detections.append(((x_min, y_min, x_max, y_max), conf, 'person', distance, head_position))
         
-    # Ordenar las detecciones por distancia
-    detections_sorted = sorted(detections, key=lambda d: d[3])  # Ordenar por distancia (índice 3)
+    # Sort detections by distance
+    detections_sorted = sorted(detections, key=lambda d: d[3])  # Sort by distance (index 3)
 
     return detections_sorted, inference_time
+
 
 
 def detect_head(frame, bbox):
