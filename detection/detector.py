@@ -97,15 +97,15 @@ def detect_head(frame, bbox):
     x_min, y_min, x_max, y_max = map(int, bbox)
 
     # Ajustar el bounding box para enfocarse en el cuarto superior
-    head_region = frame[y_min:y_min + (y_max - y_min) // 4, x_min:x_max]
+    y_min_adjusted = max(0, y_min)
+    y_max_adjusted = min(frame.shape[0], y_min + (y_max - y_min) // 4)
+    x_min_adjusted = max(0, x_min)
+    x_max_adjusted = min(frame.shape[1], x_max)
 
-    # Validar que la región no esté vacía ni fuera de los límites
-    if head_region is None or head_region.size == 0:
-        print("Error: head_region está vacía o fuera de los límites.")
-        return None
+    head_region = frame[y_min_adjusted:y_max_adjusted, x_min_adjusted:x_max_adjusted]
 
-    # Verificar si las dimensiones de head_region son válidas
-    if len(head_region.shape) < 2 or head_region.shape[0] == 0 or head_region.shape[1] == 0:
+    # Validar que la región no esté vacía
+    if head_region.size == 0 or len(head_region.shape) < 2 or head_region.shape[0] == 0 or head_region.shape[1] == 0:
         print("Error: head_region tiene dimensiones no válidas.")
         return None
 
@@ -128,7 +128,8 @@ def detect_head(frame, bbox):
     avg_y = int(np.mean([kp.pt[1] for kp in keypoints]))
 
     # Transformar la posición promedio al espacio original del frame
-    sift_x = x_min + avg_x
-    sift_y = y_min + avg_y
+    sift_x = x_min_adjusted + avg_x
+    sift_y = y_min_adjusted + avg_y
 
     return (sift_x, sift_y)
+

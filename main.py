@@ -67,6 +67,14 @@ def main():
 
             head_x, head_y = -1, -1
 
+            # Usa SIFT como respaldo
+            sift_position = detect_head(frame_original, (mapped_x_min, mapped_y_min, mapped_x_max, mapped_y_max))
+            if sift_position:
+                mapped_sift_x, mapped_sift_y = map_coordinates(target_size, screen_size, sift_position)
+                cv2.circle(frame_original, (mapped_sift_x, mapped_sift_y), 5, (0, 0, 255), -1)
+                head_x = mapped_sift_x
+                head_y = mapped_sift_y
+            """
             if head_position:
                 # Si se detectó la cabeza, dibuja el punto
                 mapped_head_x, mapped_head_y = map_coordinates(target_size, screen_size, head_position)
@@ -81,7 +89,7 @@ def main():
                     cv2.circle(frame_original, (mapped_sift_x, mapped_sift_y), 5, (0, 0, 255), -1)
                     head_x = mapped_sift_x
                     head_y = mapped_sift_y
-
+            """
             #aim_and_shoot((head_x, head_y))
             
             
