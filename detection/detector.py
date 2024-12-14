@@ -131,5 +131,7 @@ def detect_head(frame, bbox):
     sift_x = x_min_adjusted + avg_x
     sift_y = y_min_adjusted + avg_y
 
+    print("Head succesfully detected using sift at ({0},{1})".format(sift_x,sift_y))
+
     return (sift_x, sift_y)
 
