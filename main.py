@@ -3,6 +3,7 @@ from detection.detector import detect_targets, detect_head
 from control.mouse import aim_and_shoot
 from utils.transformations import map_coordinates
 import cv2
+import torch
 
 def print_performance_summary(total_inference_time, frame_count):
     """
@@ -17,6 +18,13 @@ def print_performance_summary(total_inference_time, frame_count):
 
     # Formato estético para los resultados
     print("\n========== Performance Summary ==========")
+    device = None
+    if torch.cuda.is_available():
+        device = "CUDA"
+    else:
+        device = "CPU"
+
+    print(f"Model running on {device}")
     print(f"Average Inference Time per Frame: {average_inference_time * 1000:.2f} ms")
     print(f"Average FPS: {average_fps:.2f}")
     print("========================================")
