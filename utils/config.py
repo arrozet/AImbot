@@ -23,4 +23,5 @@ MODEL_CLASSES = [0, 7]  # Classes: 0 = Person, 7 = Head
 
 # General settings
 ENABLE_MASK = True  # Whether to use the mask during screen capture
+DLL_PATH = "./control/rzctl.dll"
 

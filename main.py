@@ -1,6 +1,6 @@
 from screen.capture import capture_screen
 from detection.detector import detect_targets, detect_head
-from control.mouse import aim_and_shoot
+from control.mouse import RazerMouse
 from utils.transformations import map_coordinates
 import cv2
 import torch
@@ -39,6 +39,10 @@ def main():
 
     frame_count = 0
     total_inference_time = 0  # Acumula el tiempo de inferencia de cada frame
+
+     # Inicializa el controlador de ratón Razer
+    razer_mouse = RazerMouse(cfg.DLL_PATH)
+    razer_mouse.initialize()
 
     while True:
          # Captura el frame original y el frame procesado
@@ -89,7 +93,8 @@ def main():
                     head_x = sift_x
                     head_y = sift_y
 
-            #aim_and_shoot((head_x, head_y))
+            print("Shooting at ({0},{1})".format(head_x,head_y))
+            razer_mouse.aim_and_shoot((head_x, head_y))
             
         # Muestra el frame original completo
         cv2.imshow("Real-Time Detection", frame_original)
