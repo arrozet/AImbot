@@ -2,6 +2,7 @@ from ultralytics import YOLO
 import cv2
 import numpy as np
 import torch
+import utils.config as cfg
 
 # Load the YOLO model
 model = YOLO('sunxds_0.5.6.pt')  # Lightweight model for fast inference
@@ -36,7 +37,7 @@ def detect_targets(frame, screen_center=(320, 320)):
         frame = frame.to('cuda')
 
     # Perform inference using the YOLO model
-    results = model.predict(source=frame, conf=0.3, classes=[0, 7])  # Detect persons (0) and heads (7)
+    results = model.predict(source=frame, conf=cfg.MODEL_CONFIDENCE_THRESHOLD, classes=cfg.MODEL_CLASSES)  # Detect persons (0) and heads (7)
     stats = results[0].speed  # Extract processing times (ms)
     inference_time = stats['inference'] / 1000.0  # Convert milliseconds to seconds
 
@@ -130,8 +131,6 @@ def detect_head(frame, bbox):
     # Transformar la posición promedio al espacio original del frame
     sift_x = x_min_adjusted + avg_x
     sift_y = y_min_adjusted + avg_y
-
-    print("Head succesfully detected using sift at ({0},{1})".format(sift_x,sift_y))
 
     return (sift_x, sift_y)
 
