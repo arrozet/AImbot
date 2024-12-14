@@ -82,7 +82,7 @@ def main():
                     head_x = mapped_sift_x
                     head_y = mapped_sift_y
 
-            aim_and_shoot((head_x, head_y))
+            #aim_and_shoot((head_x, head_y))
             
             
 
