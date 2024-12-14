@@ -25,3 +25,7 @@ MODEL_CLASSES = [0, 7]  # Classes: 0 = Person, 7 = Head
 ENABLE_MASK = True  # Whether to use the mask during screen capture
 DLL_PATH = "./control/rzctl.dll"
 
+# Sensibilidad del ratón (ajusta según la configuración del juego)
+MOUSE_SENSITIVITY = 1  # Por ejemplo
+
+

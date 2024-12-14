@@ -1,5 +1,7 @@
 import ctypes
 import os
+import time
+import utils.config as cfg
 
 
 class RazerMouseError(Exception):
@@ -52,35 +54,57 @@ class RazerMouse:
         print("Razer control initialized successfully!")
 
     @staticmethod
-    def get_screen_resolution():
-        """Obtiene la resolución actual de la pantalla principal."""
-        user32 = ctypes.windll.user32
-        screen_width = user32.GetSystemMetrics(0)
-        screen_height = user32.GetSystemMetrics(1)
-        return screen_width, screen_height
+    def get_screen_center():
+        """Obtiene el centro de la pantalla."""
+        return cfg.SCREEN_SIZE[0] // 2, cfg.SCREEN_SIZE[1] // 2
 
-    @staticmethod
-    def normalize_coordinates(x, y):
-        """Convierte coordenadas de píxeles a coordenadas normalizadas."""
-        screen_width, screen_height = RazerMouse.get_screen_resolution()
-        norm_x = int((x / screen_width) * 65535)
-        norm_y = int((y / screen_height) * 65535)
-        return norm_x, norm_y
-
-    def move_mouse(self, x, y, from_start_point=False):
+    def move_mouse(self, dx, dy, delay=0):
         """
-        Mueve el ratón a una posición específica o relativa.
+        Mueve el ratón en un desplazamiento relativo.
 
         Args:
-            x (int): Coordenada X.
-            y (int): Coordenada Y.
-            from_start_point (bool): Si True, el movimiento es relativo; si False, es absoluto.
+            dx (int): Desplazamiento en X.
+            dy (int): Desplazamiento en Y.
+            delay (float): Pausa entre movimientos, en segundos.
         """
-        if not from_start_point:  # Normalizar solo si el movimiento es absoluto
-            x, y = self.normalize_coordinates(x, y)
+        self.dll.mouse_move(dx, dy, True)
+        if delay > 0:
+            time.sleep(delay)
 
-        self.dll.mouse_move(x, y, from_start_point)
-        print(f"Mouse moved to ({x}, {y}) with relative: {from_start_point}")
+    def move_to_target(self, target_x, target_y, max_step=50, min_step=5, delay=0.01):
+        """
+        Mueve el ratón al objetivo en pasos dinámicos.
+
+        Args:
+            target_x (int): Coordenada X del objetivo.
+            target_y (int): Coordenada Y del objetivo.
+            max_step (int): Tamaño máximo del paso.
+            min_step (int): Tamaño mínimo del paso.
+            delay (float): Pausa entre movimientos, en segundos.
+        """
+        center_x, center_y = self.get_screen_center()
+        dx = target_x - center_x
+        dy = target_y - center_y
+
+        while abs(dx) > min_step or abs(dy) > min_step:
+            # Ajusta el tamaño del paso dinámicamente
+            step_x = max(min(max_step, abs(dx)), min_step) * (1 if dx > 0 else -1)
+            step_y = max(min(max_step, abs(dy)), min_step) * (1 if dy > 0 else -1)
+
+            # Mueve en pasos
+            self.move_mouse(step_x, step_y, delay)
+
+            # Reduce la distancia restante
+            dx -= step_x
+            dy -= step_y
+
+        # Último ajuste para cerrar la distancia
+        self.move_mouse(dx, dy)
+        
+        # Simula un clic al llegar al objetivo
+        self.click_mouse(1)  # Left Click Down
+        self.click_mouse(2)  # Left Click Up
+        print(f"Mouse moved to target ({target_x}, {target_y}).")
 
     def click_mouse(self, click_type):
         """
@@ -92,11 +116,10 @@ class RazerMouse:
         if click_type not in [1, 2]:
             raise ValueError("Invalid click type. Use 1 for Down and 2 for Up.")
         self.dll.mouse_click(click_type)
-        print(f"Mouse click of type {click_type} executed.")
 
     def aim_and_shoot(self, target):
         """
-        Mueve el ratón a las coordenadas del objetivo y simula un clic.
+        Apunta hacia el objetivo y simula un disparo.
 
         Args:
             target (tuple): Coordenadas (x, y) del objetivo.
@@ -104,10 +127,11 @@ class RazerMouse:
         if not isinstance(target, tuple) or len(target) != 2:
             raise ValueError("Target must be a tuple with two elements: (x, y).")
 
-        x, y = target
-        self.move_mouse(x, y, from_start_point=False)
-        """
-        self.click_mouse(1)  # Left Click Down
-        self.click_mouse(2)  # Left Click Up
-        """
-        print(f"Aimed and shot at target ({x}, {y}).")
+        target_x, target_y = target
+
+        # Mueve el ratón al objetivo
+        self.move_to_target(target_x, target_y)
+
+
+
+        print(f"Aimed and shot at target ({target_x}, {target_y}).")
