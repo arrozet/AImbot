@@ -57,8 +57,8 @@ def main():
     camera.start(target_fps=cfg.TARGET_FPS)
 
     # Configura la ventana como redimensionable
-    cv2.namedWindow("User View (Left) | Machine View (Right)", cv2.WINDOW_NORMAL)
-    cv2.resizeWindow("User View (Left) | Machine View (Right)", *cfg.DISPLAY_SIZE)  # The * is to unpack value
+    cv2.namedWindow(cfg.TITLE_TEXT, cv2.WINDOW_NORMAL)
+    cv2.resizeWindow(cfg.TITLE_TEXT, *cfg.DISPLAY_SIZE)  # The * is to unpack value
 
     frame_count = 0
     total_inference_time = 0  # Acumula el tiempo de inferencia de cada frame
@@ -150,7 +150,7 @@ def main():
             combined_frame = np.hstack((frame, frame_machine))
 
             # Mostrar el frame combinado
-            cv2.imshow("User View (Left) | Machine View (Right)", combined_frame)
+            cv2.imshow(cfg.TITLE_TEXT, combined_frame)
             cv2.waitKey(1)
 
     finally:
