@@ -71,7 +71,7 @@ class RazerMouse:
         if delay > 0:
             time.sleep(delay)
 
-    def move_to_target(self, target_x, target_y, max_step=50, min_step=5, delay=0.01):
+    def move_to_target(self, target_x, target_y, max_step=50, min_step=5, delay=0):
         """
         Mueve el ratón al objetivo en pasos dinámicos.
 
@@ -97,9 +97,6 @@ class RazerMouse:
             # Reduce la distancia restante
             dx -= step_x
             dy -= step_y
-
-        # Último ajuste para cerrar la distancia
-        self.move_mouse(dx, dy)
         
         # Simula un clic al llegar al objetivo
         self.left_click_mouse()
@@ -130,7 +127,7 @@ class RazerMouse:
 
     def aim_and_shoot(self, target):
         """
-        Apunta hacia el objetivo y simula un disparo.
+        Apunta hacia el objetivo y simula un disparo si el ratón está alineado con el objetivo.
 
         Args:
             target (tuple): Coordenadas (x, y) del objetivo.
@@ -140,9 +137,15 @@ class RazerMouse:
 
         target_x, target_y = target
 
-        # Mueve el ratón al objetivo
+        # Mueve el ratón hacia el objetivo
         self.move_to_target(target_x, target_y)
 
-
-
-        print(f"Aimed and shot at target ({target_x}, {target_y}).")
+        # Verifica si el centro de la pantalla está sobre el objetivo
+        center_x, center_y = self.get_screen_center()
+        
+        if abs(center_x - target_x) <= cfg.TOLERANCE and abs(center_y - target_y) <= cfg.TOLERANCE:
+            # Si el centro está dentro de la tolerancia, dispara
+            self.left_click_mouse()
+            print(f"Aimed and shot at target ({target_x}, {target_y}).")
+        else:
+            print(f"Target not aligned with screen center. Mouse at ({center_x}, {center_y}), Target at ({target_x}, {target_y}).")

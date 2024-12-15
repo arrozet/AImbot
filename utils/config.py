@@ -18,12 +18,13 @@ REFERENCE_WEAPON_MASK = (1080, 600, 1680, 1070)  # Mask coordinates for 1920x108
 WEAPON_MASK = transformations.scale_coordinates(SCREEN_SIZE, REFERENCE_SIZE, REFERENCE_WEAPON_MASK)
 
 # Model settings
-MODEL_CONFIDENCE_THRESHOLD = 0.3  # Confidence threshold for object detection
+MODEL_CONFIDENCE_THRESHOLD = 0.5  # Confidence threshold for object detection
 MODEL_CLASSES = [0, 7]  # Classes: 0 = Person, 7 = Head
 
 # General settings
 ENABLE_MASK = False  # Whether to use the mask during screen capture
 DLL_PATH = "./control/rzctl.dll"
+TOLERANCE = 5
 
 # Sensibilidad del ratón (ajusta según la configuración del juego)
 MOUSE_SENSITIVITY = 1  # Por ejemplo
