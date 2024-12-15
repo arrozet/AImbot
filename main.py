@@ -6,6 +6,7 @@ import cv2
 import torch
 import utils.config as cfg
 import bettercam
+import keyboard
 
 def print_performance_summary(total_inference_time, frame_count):
     """
@@ -49,8 +50,30 @@ def main():
     razer_mouse = RazerMouse(cfg.DLL_PATH)
     razer_mouse.initialize()
 
+    paused = False  # Variable para controlar el estado del aimbot
+    
     try:
         while True:
+            # Verifica si se presionó Ctrl + T para salir
+            if keyboard.is_pressed('ctrl+t'):
+                print("Ctrl + T pressed. Exiting program.")
+                break
+
+            # Verifica si se presionó Ctrl + Q para pausar/reanudar
+            if keyboard.is_pressed('ctrl+q'):
+                paused = not paused  # Cambia el estado del aimbot
+                if paused:
+                    print("Aimbot paused. Press 'Ctrl + Q' to resume.")
+                else:
+                    print("Aimbot resumed.")
+                # Espera un breve momento para evitar múltiples detecciones de la misma tecla
+                while keyboard.is_pressed('ctrl+q'):
+                    pass
+
+            # Si el aimbot está en pausa, no procesa los frames
+            if paused:
+                continue
+            
             # Captura el frame original y el frame procesado
             frame = camera.get_latest_frame()
             frame_original, frame_processed = process_frame(frame, region=None, use_mask=cfg.ENABLE_MASK, mask_coords=cfg.WEAPON_MASK, target_size=cfg.TARGET_SIZE)
@@ -105,10 +128,6 @@ def main():
                 
             # Muestra el frame original completo
             cv2.imshow("Real-Time Detection", frame_original)
-
-            # Salida al presionar 'q'
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
 
     finally:
         # Detiene la captura y libera recursos
