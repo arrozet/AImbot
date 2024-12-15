@@ -5,7 +5,7 @@ import torch
 import utils.config as cfg
 
 # Load the YOLO model
-model = YOLO('./detection/weights/sunxds_0.5.6.pt')  # Lightweight model for fast inference
+model = YOLO(cfg.WEIGHTS_PATH)  # Lightweight model for fast inference
 
 # Check if CUDA is available and move the model to the appropriate device
 if torch.cuda.is_available():

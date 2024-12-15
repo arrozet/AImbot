@@ -1,2 +1,3 @@
 https://github.com/Sadmeme/rzctl # razer controller code
 https://github.com/MarsInsanity/rzctl # compilable version
+https://www.patreon.com/sunone # weights

@@ -130,7 +130,7 @@ def main():
                         head_y = sift_y
 
                 #print("Shooting at ({0},{1})".format(head_x,head_y))
-                razer_mouse.aim_and_shoot((head_x, head_y))
+                #razer_mouse.aim_and_shoot((head_x, head_y))
 
                 # Dibujo todo lo relativo a la detección
                 if(cfg.DRAW):
