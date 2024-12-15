@@ -33,7 +33,7 @@ def print_performance_summary(total_inference_time, frame_count):
     print("========================================")
 
 def main():
-    print("Starting real-time detection with a specific mask. Press 'q' to quit.")
+    print("Starting real-time detection with a specific mask. Press 'ctrl+q' to pause and resume. Press 'ctrl+p' to quit.")
     
     # Inicializa la cámara con BetterCam
     camera = bettercam.create()
@@ -76,8 +76,9 @@ def main():
             
             # Captura el frame original y el frame procesado
             frame = camera.get_latest_frame()
-            frame_original, frame_processed = process_frame(frame, region=None, use_mask=cfg.ENABLE_MASK, mask_coords=cfg.WEAPON_MASK, target_size=cfg.TARGET_SIZE)
-            if frame_original is None or frame_processed is None:
+                
+            frame_machine, frame_processed = process_frame(frame, region=None, use_mask=cfg.ENABLE_MASK, mask_coords=cfg.WEAPON_MASK, target_size=cfg.TARGET_SIZE)
+            if frame_machine is None or frame_processed is None:
                 continue
 
             # Detecta objetos ordenados por distancia y obtiene el tiempo de inferencia
@@ -96,10 +97,10 @@ def main():
                 mapped_x_max, mapped_y_max = map_coordinates(cfg.TARGET_SIZE, cfg.SCREEN_SIZE, (x_max, y_max))
 
                 # Dibuja las bounding boxes en la imagen original
-                cv2.rectangle(frame_original, (mapped_x_min, mapped_y_min), (mapped_x_max, mapped_y_max), (0, 255, 0), 2)
+                cv2.rectangle(frame, (mapped_x_min, mapped_y_min), (mapped_x_max, mapped_y_max), (0, 255, 0), 2)
                 label = f"{cls}: {conf:.2f}"
                 cv2.putText(
-                    frame_original, label, (mapped_x_min, mapped_y_min - 10),
+                    frame, label, (mapped_x_min, mapped_y_min - 10),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1
                 )
 
@@ -109,17 +110,17 @@ def main():
                 if head_position:
                     # Si se detectó la cabeza, dibuja el punto
                     mapped_head_x, mapped_head_y = map_coordinates(cfg.TARGET_SIZE, cfg.SCREEN_SIZE, head_position)
-                    cv2.circle(frame_original, (mapped_head_x, mapped_head_y), 5, (0, 255, 0), -1)
+                    cv2.circle(frame, (mapped_head_x, mapped_head_y), 5, (0, 255, 0), -1)
                     head_x = mapped_head_x
                     head_y = mapped_head_y
                 else:
                     # Usa SIFT como respaldo
-                    sift_position = detect_head(frame_original, (mapped_x_min, mapped_y_min, mapped_x_max, mapped_y_max))
+                    sift_position = detect_head(frame, (mapped_x_min, mapped_y_min, mapped_x_max, mapped_y_max))
                     if sift_position:
                         sift_x, sift_y = sift_position
                         #map_coordinates(target_size, screen_size, sift_position)
                         print("Head is now at ({0},{1}) coordinates".format(sift_x,sift_y))
-                        cv2.circle(frame_original, (sift_x, sift_y), 5, (0, 0, 255), -1)
+                        cv2.circle(frame, (sift_x, sift_y), 5, (0, 0, 255), -1)
                         head_x = sift_x
                         head_y = sift_y
 
@@ -127,7 +128,9 @@ def main():
                 razer_mouse.aim_and_shoot((head_x, head_y))
                 
             # Muestra el frame original completo
-            cv2.imshow("Real-Time Detection", frame_original)
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            cv2.imshow("Real-Time Detection", frame)
+            cv2.waitKey(1)
 
     finally:
         # Detiene la captura y libera recursos

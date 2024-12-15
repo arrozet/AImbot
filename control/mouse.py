@@ -124,6 +124,7 @@ class RazerMouse:
         """
         self.click_mouse(1)  # Left Click Down
         self.click_mouse(2)  # Left Click Up
+        time.sleep(0.1)
 
     def aim_and_shoot(self, target):
         """
@@ -142,7 +143,7 @@ class RazerMouse:
 
         # Verifica si el centro de la pantalla está sobre el objetivo
         center_x, center_y = self.get_screen_center()
-        
+
         if abs(center_x - target_x) <= cfg.TOLERANCE and abs(center_y - target_y) <= cfg.TOLERANCE:
             # Si el centro está dentro de la tolerancia, dispara
             self.left_click_mouse()
