@@ -102,10 +102,11 @@ class RazerMouse:
         self.move_mouse(dx, dy)
         
         # Simula un clic al llegar al objetivo
-        self.click_mouse(1)  # Left Click Down
-        self.click_mouse(2)  # Left Click Up
+        self.left_click_mouse()
         print(f"Mouse moved to target ({target_x}, {target_y}).")
 
+    
+    
     def click_mouse(self, click_type):
         """
         Simula un clic del ratón.
@@ -116,6 +117,16 @@ class RazerMouse:
         if click_type not in [1, 2]:
             raise ValueError("Invalid click type. Use 1 for Down and 2 for Up.")
         self.dll.mouse_click(click_type)
+
+    def left_click_mouse(self):
+        """
+        Simula un clic del ratón.
+
+        Args:
+            click_type (int): Tipo de clic (1 = Down, 2 = Up, etc.).
+        """
+        self.click_mouse(1)  # Left Click Down
+        self.click_mouse(2)  # Left Click Up
 
     def aim_and_shoot(self, target):
         """
