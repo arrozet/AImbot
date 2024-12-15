@@ -6,7 +6,7 @@ Configuration file for centralizing adjustable parameters used in the project.
 
 # Screen settings
 SCREEN_SIZE = (1920, 1080)  # Full screen resolution
-TARGET_SIZE = (480, 480)    # Model input size
+TARGET_SIZE = (320, 320)    # Model input size
 SCREEN_CENTER = (TARGET_SIZE[0] // 2, TARGET_SIZE[1] // 2)  # Center of processed image
 DISPLAY_SIZE = (SCREEN_SIZE[0] // 2, SCREEN_SIZE[1] // 2)
 TARGET_FPS = 60
@@ -26,8 +26,9 @@ MODEL_CLASSES = [0, 7]  # Classes: 0 = Person, 7 = Head
 # General settings
 ENABLE_MASK = False  # Whether to use the mask during screen capture
 DLL_PATH = "./control/rzctl.dll"
-TOLERANCE = 5
+TOLERANCE = 2
 TITLE_TEXT = "User View (Left) | Machine View (Right)"
+DRAW = False
 
 # Sensibilidad del ratón (ajusta según la configuración del juego)
 MOUSE_SENSITIVITY = 1  # Por ejemplo

@@ -56,9 +56,11 @@ def main():
     camera = bettercam.create()
     camera.start(target_fps=cfg.TARGET_FPS)
 
-    # Configura la ventana como redimensionable
-    cv2.namedWindow(cfg.TITLE_TEXT, cv2.WINDOW_NORMAL)
-    cv2.resizeWindow(cfg.TITLE_TEXT, *cfg.DISPLAY_SIZE)  # The * is to unpack value
+    if(cfg.DRAW):
+        # Configura la ventana como redimensionable
+        cv2.namedWindow(cfg.TITLE_TEXT, cv2.WINDOW_NORMAL)
+        cv2.resizeWindow(cfg.TITLE_TEXT, *cfg.DISPLAY_SIZE)  # The * is to unpack value
+
 
     frame_count = 0
     total_inference_time = 0  # Acumula el tiempo de inferencia de cada frame
@@ -113,21 +115,10 @@ def main():
                 mapped_x_min, mapped_y_min = map_coordinates(cfg.TARGET_SIZE, cfg.SCREEN_SIZE, (x_min, y_min))
                 mapped_x_max, mapped_y_max = map_coordinates(cfg.TARGET_SIZE, cfg.SCREEN_SIZE, (x_max, y_max))
 
-                # Dibuja las bounding boxes en la imagen original
-                cv2.rectangle(frame, (mapped_x_min, mapped_y_min), (mapped_x_max, mapped_y_max), (0, 255, 0), 2)
-                label = f"{cls}: {conf:.2f}"
-                cv2.putText(
-                    frame, label, (mapped_x_min, mapped_y_min - 10),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1
-                )
-
-                head_x, head_y = -1, -1
-
-
                 if head_position:
                     # Si se detectó la cabeza, dibuja el punto
                     mapped_head_x, mapped_head_y = map_coordinates(cfg.TARGET_SIZE, cfg.SCREEN_SIZE, head_position)
-                    cv2.circle(frame, (mapped_head_x, mapped_head_y), 5, (0, 255, 0), -1)
+                    
                     head_x = mapped_head_x
                     head_y = mapped_head_y
                 else:
@@ -135,23 +126,36 @@ def main():
                     sift_position = detect_head(frame, (mapped_x_min, mapped_y_min, mapped_x_max, mapped_y_max))
                     if sift_position:
                         sift_x, sift_y = sift_position
-                        #map_coordinates(target_size, screen_size, sift_position)
-                        print("Head is now at ({0},{1}) coordinates".format(sift_x,sift_y))
-                        cv2.circle(frame, (sift_x, sift_y), 5, (0, 0, 255), -1)
                         head_x = sift_x
                         head_y = sift_y
 
                 #print("Shooting at ({0},{1})".format(head_x,head_y))
                 razer_mouse.aim_and_shoot((head_x, head_y))
-                
-            frame_machine = pad_image_to_match_height(frame_machine, frame.shape[0])
 
-            # Combinar las dos imágenes horizontalmente
-            combined_frame = np.hstack((frame, frame_machine))
+                # Dibujo todo lo relativo a la detección
+                if(cfg.DRAW):
+                    # Dibuja las bounding boxes en la imagen original
+                    cv2.rectangle(frame, (mapped_x_min, mapped_y_min), (mapped_x_max, mapped_y_max), (0, 255, 0), 2)
+                    label = f"{cls}: {conf:.2f}"
+                    cv2.putText(
+                        frame, label, (mapped_x_min, mapped_y_min - 10),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1
+                    )
 
-            # Mostrar el frame combinado
-            cv2.imshow(cfg.TITLE_TEXT, combined_frame)
-            cv2.waitKey(1)
+                    # Marca la cabeza
+                    cv2.circle(frame, (head_x, head_y), 5, (0, 255, 0), -1)
+
+            # Muestro el frame
+            if(cfg.DRAW):
+                # Añade padding a la imagen de la maquina
+                frame_machine = pad_image_to_match_height(frame_machine, frame.shape[0])
+
+                # Combinar las dos imágenes horizontalmente
+                combined_frame = np.hstack((frame, frame_machine))
+
+                # Mostrar el frame combinado
+                cv2.imshow(cfg.TITLE_TEXT, combined_frame)
+                cv2.waitKey(1)
 
     finally:
         # Detiene la captura y libera recursos

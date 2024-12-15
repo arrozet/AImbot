@@ -71,7 +71,7 @@ class RazerMouse:
         if delay > 0:
             time.sleep(delay)
 
-    def move_to_target(self, target_x, target_y, max_step=50, min_step=5, delay=0):
+    def move_to_target(self, target_x, target_y, max_step=70, min_step=2, delay=0):
         """
         Mueve el ratón al objetivo en pasos dinámicos.
 
