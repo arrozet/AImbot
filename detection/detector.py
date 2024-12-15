@@ -10,6 +10,8 @@ model = YOLO('./detection/weights/sunxds_0.5.6.pt')  # Lightweight model for fas
 # Check if CUDA is available and move the model to the appropriate device
 if torch.cuda.is_available():
     print("CUDA is available. Using GPU.")
+    print(torch.version.cuda)
+
     model.to('cuda')  # Move the model to the GPU
 else:
     print("CUDA is not available. Using CPU.")

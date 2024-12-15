@@ -9,6 +9,7 @@ SCREEN_SIZE = (1920, 1080)  # Full screen resolution
 TARGET_SIZE = (640, 640)    # Model input size
 SCREEN_CENTER = (TARGET_SIZE[0] // 2, TARGET_SIZE[1] // 2)  # Center of processed image
 DISPLAY_SIZE = (SCREEN_SIZE[0] // 2, SCREEN_SIZE[1] // 2)
+TARGET_FPS = 60
 
 # Reference resolution for calculating dynamic mask positions
 REFERENCE_SIZE = (1920, 1080)

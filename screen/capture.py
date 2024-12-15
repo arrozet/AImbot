@@ -2,11 +2,9 @@ import bettercam
 import numpy as np
 import cv2
 import torch
+import utils.config as cfg
 
-# Inicializa BetterCam
-camera = bettercam.create()
-
-def capture_screen(region=None, use_mask=False, mask_coords=None, target_size=(640, 640)):
+def process_frame(frame, region=None, use_mask=False, mask_coords=None, target_size=cfg.TARGET_SIZE):
     """
     Captura un frame de la pantalla utilizando BetterCam y aplica preprocesamiento.
 
@@ -21,11 +19,6 @@ def capture_screen(region=None, use_mask=False, mask_coords=None, target_size=(6
     - frame_processed: Imagen procesada lista para el modelo (tensor de PyTorch).
     """
     try:
-        # Captura la pantalla
-        frame = camera.grab(region=region)
-        if frame is None:
-            return None, None
-
         # Convertir a NumPy
         frame_original = np.array(frame, dtype=np.uint8)
 
