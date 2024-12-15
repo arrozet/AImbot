@@ -1,10 +1,12 @@
 opencv-python               # Library for computer vision and image processing (with GUI support)
 opencv-python-headless      # Lightweight version of OpenCV for headless systems (no GUI support)
-torch==2.0.1+cu118          # PyTorch library for deep learning with CUDA 11.8 support
-torchvision==0.15.2+cu118   # Image processing library for PyTorch with CUDA 11.8 support
-torchaudio==2.0.2+cu118     # Audio processing library for PyTorch with CUDA 11.8 support
 ultralytics                 # Library for YOLO models and real-time object detection
-numpy                       # Fundamental package for scientific computing and arrays
+numpy==1.26.4               # Fundamental package for scientific computing and arrays
 bettercam                   # Custom library for screen capture (specific to this project)
 pynput                      # Library to control and monitor the mouse and keyboard
 matplotlib                  # Library for creating visualizations and plots
+torch==2.2.2+cu118          # PyTorch library for deep learning with CUDA 11.8 support
+torchvision==0.17.2+cu118   # Image processing library for PyTorch with CUDA 11.8 support
+torchaudio==2.2.2+cu118     # Audio processing library for PyTorch with CUDA 11.8 support
+
+#pip install torch==2.2.2+cu118 torchvision==0.17.2+cu118 torchaudio==2.2.2+cu118 -f https://download.pytorch.org/whl/torch_stable.html

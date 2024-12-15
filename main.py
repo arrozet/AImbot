@@ -93,8 +93,8 @@ def main():
                     head_x = sift_x
                     head_y = sift_y
 
-            print("Shooting at ({0},{1})".format(head_x,head_y))
-            razer_mouse.aim_and_shoot((head_x, head_y))
+            #print("Shooting at ({0},{1})".format(head_x,head_y))
+            #razer_mouse.aim_and_shoot((head_x, head_y))
             
         # Muestra el frame original completo
         cv2.imshow("Real-Time Detection", frame_original)
