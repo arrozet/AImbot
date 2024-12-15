@@ -7,6 +7,23 @@ import torch
 import utils.config as cfg
 import bettercam
 import keyboard
+import numpy as np
+
+def pad_image_to_match_height(img, target_height):
+    """
+    Rellena la imagen con bordes negros para igualar la altura objetivo.
+    
+    Args:
+        img (np.ndarray): Imagen a rellenar.
+        target_height (int): Altura deseada.
+    
+    Returns:
+        np.ndarray: Imagen con padding aplicado.
+    """
+    current_height, current_width = img.shape[:2]
+    padding_top = (target_height - current_height) // 2
+    padding_bottom = target_height - current_height - padding_top
+    return cv2.copyMakeBorder(img, padding_top, padding_bottom, 0, 0, cv2.BORDER_CONSTANT, value=[0, 0, 0])
 
 def print_performance_summary(total_inference_time, frame_count):
     """
@@ -40,8 +57,8 @@ def main():
     camera.start(target_fps=cfg.TARGET_FPS)
 
     # Configura la ventana como redimensionable
-    cv2.namedWindow("Real-Time Detection", cv2.WINDOW_NORMAL)
-    cv2.resizeWindow("Real-Time Detection", *cfg.DISPLAY_SIZE)  # The * is to unpack value
+    cv2.namedWindow("User View (Left) | Machine View (Right)", cv2.WINDOW_NORMAL)
+    cv2.resizeWindow("User View (Left) | Machine View (Right)", *cfg.DISPLAY_SIZE)  # The * is to unpack value
 
     frame_count = 0
     total_inference_time = 0  # Acumula el tiempo de inferencia de cada frame
@@ -127,9 +144,13 @@ def main():
                 #print("Shooting at ({0},{1})".format(head_x,head_y))
                 razer_mouse.aim_and_shoot((head_x, head_y))
                 
-            # Muestra el frame original completo
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            cv2.imshow("Real-Time Detection", frame)
+            frame_machine = pad_image_to_match_height(frame_machine, frame.shape[0])
+
+            # Combinar las dos imágenes horizontalmente
+            combined_frame = np.hstack((frame, frame_machine))
+
+            # Mostrar el frame combinado
+            cv2.imshow("User View (Left) | Machine View (Right)", combined_frame)
             cv2.waitKey(1)
 
     finally:
