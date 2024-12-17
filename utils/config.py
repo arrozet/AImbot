@@ -63,7 +63,7 @@ ENABLE_MASK = False  # Whether to use the mask during screen capture
 DLL_PATH = "./control/rzctl.dll"
 WEIGHT_FILE = "sunxds_0.7.1.pt"
 WEIGHTS_PATH = "./detection/weights/" + WEIGHT_FILE
-TOLERANCE = 20
+TOLERANCE = 5
 TITLE_TEXT = "User View (Left) | Machine View (Right)"
 DRAW = True
 
