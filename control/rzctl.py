@@ -70,18 +70,5 @@ class RazerMouse():
         self.mouse_click(click_mask)
 
     def mouse_left_click(self):
-        """
-        Args:
-            click_mask (MOUSE_CLICK):
-        """
         self.mouse_click(MOUSE_CLICK.LEFT_DOWN)
         self.mouse_click(MOUSE_CLICK.LEFT_UP)
-
-        
-    def keyboard_input(self, scan_code, up_down):
-        """
-        Args:
-            scan_code (short): https://www.millisecond.com/support/docs/current/html/language/scancodes.htm
-            up_down (KEYBOARD_INPUT_TYPE): _description_
-        """
-        self.keyboard_input(scan_code, up_down)
