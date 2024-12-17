@@ -1,7 +1,8 @@
 from screen.capture import process_frame
 from detection.detector import detect_targets, detect_head
-from control.mouse import RazerMouse
-from utils.transformations import map_coordinates
+from utils.transformations import map_detections
+from control import mouse
+from control import rzctl
 import cv2
 import torch
 import utils.config as cfg
@@ -53,8 +54,9 @@ def main():
     print("Starting real-time detection with a specific mask. Press 'ctrl+q' to pause and resume. Press 'ctrl+p' to quit.")
     
     # Inicializa la cámara con BetterCam
-    camera = bettercam.create()
-    camera.start(target_fps=cfg.TARGET_FPS)
+    camera = bettercam.create(device_idx=0, output_idx=0)
+    camera.start()
+
 
     if(cfg.DRAW):
         # Configura la ventana como redimensionable
@@ -66,95 +68,91 @@ def main():
     total_inference_time = 0  # Acumula el tiempo de inferencia de cada frame
 
      # Inicializa el controlador de ratón Razer
-    razer_mouse = RazerMouse(cfg.DLL_PATH)
-    razer_mouse.initialize()
+    razer_mouse = rzctl.RazerMouse(cfg.DLL_PATH)
 
     paused = False  # Variable para controlar el estado del aimbot
     
     try:
+        paused = False
         while True:
-            # Verifica si se presionó Ctrl + T para salir
-            if keyboard.is_pressed('ctrl+t'):
-                print("Ctrl + T pressed. Exiting program.")
+            detected_by_sift = False
+            paused, exit_program = cfg.handle_keyboard_events(paused)
+            if exit_program:
                 break
-
-            # Verifica si se presionó Ctrl + Q para pausar/reanudar
-            if keyboard.is_pressed('ctrl+q'):
-                paused = not paused  # Cambia el estado del aimbot
-                if paused:
-                    print("Aimbot paused. Press 'Ctrl + Q' to resume.")
-                else:
-                    print("Aimbot resumed.")
-                # Espera un breve momento para evitar múltiples detecciones de la misma tecla
-                while keyboard.is_pressed('ctrl+q'):
-                    pass
-
-            # Si el aimbot está en pausa, no procesa los frames
             if paused:
                 continue
             
             # Captura el frame original y el frame procesado
             frame = camera.get_latest_frame()
                 
-            frame_machine, frame_processed = process_frame(frame, region=None, use_mask=cfg.ENABLE_MASK, mask_coords=cfg.WEAPON_MASK, target_size=cfg.TARGET_SIZE)
-            if frame_machine is None or frame_processed is None:
+            frame_eq, frame_processed = process_frame(frame, region=None, use_mask=cfg.ENABLE_MASK, mask_coords=cfg.WEAPON_MASK, target_size=cfg.TARGET_SIZE)
+            if frame_eq is None or frame_processed is None:
                 continue
 
             # Detecta objetos ordenados por distancia y obtiene el tiempo de inferencia
-            detections, inference_time = detect_targets(frame_processed, screen_center=cfg.SCREEN_CENTER)
-
+            detections, inference_time = detect_targets(frame_processed, screen_center=cfg.TARGET_CENTER)
+            
             # Acumula el tiempo de inferencia
             total_inference_time += inference_time
             frame_count += 1
 
+            # Lista para almacenar detecciones mapeadas y ordenadas
+            ordered_mapped_detections = map_detections(detections)            
+
+            head_positions = []
             # Procesa y dibuja las detecciones
-            for detection in detections:
+            for detection in ordered_mapped_detections:
                 (x_min, y_min, x_max, y_max), conf, cls, _, head_position = detection
-
-                # Mapea las coordenadas desde 640x640 al tamaño original
-                mapped_x_min, mapped_y_min = map_coordinates(cfg.TARGET_SIZE, cfg.SCREEN_SIZE, (x_min, y_min))
-                mapped_x_max, mapped_y_max = map_coordinates(cfg.TARGET_SIZE, cfg.SCREEN_SIZE, (x_max, y_max))
-
+                head_x, head_y = -1, -1
                 if head_position:
-                    # Si se detectó la cabeza, dibuja el punto
-                    mapped_head_x, mapped_head_y = map_coordinates(cfg.TARGET_SIZE, cfg.SCREEN_SIZE, head_position)
-                    
-                    head_x = mapped_head_x
-                    head_y = mapped_head_y
+                    (head_x, head_y) = head_position
+                    head_positions.append((head_x,head_y))
                 else:
                     # Usa SIFT como respaldo
-                    sift_position = detect_head(frame, (mapped_x_min, mapped_y_min, mapped_x_max, mapped_y_max))
+                    sift_position = detect_head(frame_eq, (x_min, y_min, x_max, y_max))
                     if sift_position:
-                        sift_x, sift_y = sift_position
-                        head_x = sift_x
-                        head_y = sift_y
-
-                #print("Shooting at ({0},{1})".format(head_x,head_y))
-                #razer_mouse.aim_and_shoot((head_x, head_y))
-
+                        (head_x, head_y) = sift_position
+                        head_positions.append((head_x,head_y))
+                        detected_by_sift = True
+                
                 # Dibujo todo lo relativo a la detección
                 if(cfg.DRAW):
+                    color = (0, 255, 0)
+                    # Si es la que está más cerca, ponla en roja
+                    if detection == ordered_mapped_detections[0]:
+                        color = (255, 0, 0)
+                    
                     # Dibuja las bounding boxes en la imagen original
-                    cv2.rectangle(frame, (mapped_x_min, mapped_y_min), (mapped_x_max, mapped_y_max), (0, 255, 0), 2)
+                    cv2.rectangle(frame, (x_min, y_min), (x_max, y_max), color, 2)
+
+                    # Pon la confianza de detección
                     label = f"{cls}: {conf:.2f}"
                     cv2.putText(
-                        frame, label, (mapped_x_min, mapped_y_min - 10),
+                        frame, label, (x_min, y_min - 10),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1
                     )
 
                     # Marca la cabeza
-                    cv2.circle(frame, (head_x, head_y), 5, (0, 255, 0), -1)
+                    if(head_x != -1 and head_y != -1):
+                        if detected_by_sift:
+                            color = (0,0,255)
+                        cv2.circle(frame, (head_x, head_y), 5, color, -1)
+
+            # Disparo al que está más cerca si hay deteccione
+            if detections:
+                mouse.aim_and_shoot(razer_mouse, head_positions[0])
 
             # Muestro el frame
             if(cfg.DRAW):
                 # Añade padding a la imagen de la maquina
-                frame_machine = pad_image_to_match_height(frame_machine, frame.shape[0])
+                #frame_machine = pad_image_to_match_height(frame_machine, frame.shape[0])
 
                 # Combinar las dos imágenes horizontalmente
-                combined_frame = np.hstack((frame, frame_machine))
+                #combined_frame = np.hstack((frame, frame_machine))
 
                 # Mostrar el frame combinado
-                cv2.imshow(cfg.TITLE_TEXT, combined_frame)
+                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                cv2.imshow(cfg.TITLE_TEXT, frame)
                 cv2.waitKey(1)
 
     finally:

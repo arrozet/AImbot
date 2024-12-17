@@ -1,14 +1,49 @@
 import utils.transformations as transformations
+import keyboard
 
 """
 Configuration file for centralizing adjustable parameters used in the project.
 """
 
+# Función para manejar eventos de teclado
+def handle_keyboard_events(paused):
+    """
+    Maneja eventos de teclado como salir del programa o pausar/reanudar.
+
+    Parameters:
+    - paused (bool): Estado actual del aimbot (pausado o no).
+
+    Returns:
+    - paused (bool): Estado actualizado del aimbot.
+    - exit_program (bool): Indica si se debe salir del programa.
+    """
+    exit_program = False
+
+    # Verifica si se presionó Ctrl + T para salir
+    if keyboard.is_pressed('ctrl+t'):
+        print("Ctrl + T pressed. Exiting program.")
+        exit_program = True
+
+    # Verifica si se presionó Ctrl + Q para pausar/reanudar
+    if keyboard.is_pressed('ctrl+q'):
+        paused = not paused  # Cambia el estado del aimbot
+        if paused:
+            print("Aimbot paused. Press 'Ctrl + Q' to resume.")
+        else:
+            print("Aimbot resumed.")
+        # Espera un breve momento para evitar múltiples detecciones de la misma tecla
+        while keyboard.is_pressed('ctrl+q'):
+            pass
+
+    return paused, exit_program
+
+
 # Screen settings
-SCREEN_SIZE = (1920, 1080)  # Full screen resolution
+SCREEN_SIZE = (1920, 1200)  # Full screen resolution
 TARGET_SIZE = (640, 640)    # Model input size
-SCREEN_CENTER = (TARGET_SIZE[0] // 2, TARGET_SIZE[1] // 2)  # Center of processed image
-DISPLAY_SIZE = (SCREEN_SIZE[0] // 2, SCREEN_SIZE[1] // 2)
+SCREEN_CENTER = (SCREEN_SIZE[0] // 2, SCREEN_SIZE[1] // 2)  # Center of processed image
+TARGET_CENTER = (TARGET_SIZE[0] // 2, TARGET_SIZE[1] // 2)  # Center of processed image
+DISPLAY_SIZE = (SCREEN_SIZE[0] // 1, SCREEN_SIZE[1] // 1)
 TARGET_FPS = 60
 
 # Reference resolution for calculating dynamic mask positions

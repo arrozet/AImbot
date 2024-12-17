@@ -40,7 +40,7 @@ def process_frame(frame, region=None, use_mask=False, mask_coords=None, target_s
         frame_processed = torch.from_numpy(frame_resized).float().div(255).permute(2, 0, 1)
         frame_processed = frame_processed.unsqueeze(0)  # Añadir batch dimension
 
-        return frame_resized, frame_processed
+        return frame_equalized,frame_processed
     except Exception as e:
         print(f"Error en capture_screen: {e}")
         return None, None

@@ -23,15 +23,15 @@ print(f"Model is on device: {next(model.parameters()).device}")
 
 def detect_targets(frame, screen_center=(320, 320)):
     """
-    Detects targets in a frame using YOLOv8 and sorts them by proximity to the center of the processed image.
+    Detects targets in a frame using YOLOv8.
 
     Parameters:
     - frame: Image in NumPy or processed tensor format.
     - screen_center: Tuple (x, y) representing the reference point in the resized image.
 
     Returns:
-    - detections: List of detections sorted by distance in the format:
-                  ((x_min, y_min, x_max, y_max), confidence, class_label, distance).
+    - detections: List of detections in the format:
+                  ((x_min, y_min, x_max, y_max), confidence, class_label, distance, head_position).
     - inference_time: Time taken for model inference in seconds.
     """
     # Move the frame to the GPU if CUDA is available
@@ -39,7 +39,7 @@ def detect_targets(frame, screen_center=(320, 320)):
         frame = frame.to('cuda')
 
     # Perform inference using the YOLO model
-    results = model.predict(source=frame, conf=cfg.MODEL_CONFIDENCE_THRESHOLD, classes=cfg.MODEL_CLASSES)  # Detect persons (0) and heads (7)
+    results = model.predict(source=frame, conf=cfg.MODEL_CONFIDENCE_THRESHOLD, classes=cfg.MODEL_CLASSES, verbose=False)
     stats = results[0].speed  # Extract processing times (ms)
     inference_time = stats['inference'] / 1000.0  # Convert milliseconds to seconds
 
@@ -64,7 +64,7 @@ def detect_targets(frame, screen_center=(320, 320)):
         center_x = (x_min + x_max) / 2
         center_y = (y_min + y_max) / 2
 
-        # Compute the distance to the center of the resized screen
+        # Compute the distance to the center of the resized screen (optional)
         distance = ((center_x - ref_x) ** 2 + (center_y - ref_y) ** 2) ** 0.5
 
         # Search for a head within the bounding box of the person
@@ -76,13 +76,11 @@ def detect_targets(frame, screen_center=(320, 320)):
                 head_position = (head_x, head_y)
                 break
 
-        # Save the full detection
+        # Save the full detection (distance included but not used for sorting)
         detections.append(((x_min, y_min, x_max, y_max), conf, 'person', distance, head_position))
         
-    # Sort detections by distance
-    detections_sorted = sorted(detections, key=lambda d: d[3])  # Sort by distance (index 3)
-
-    return detections_sorted, inference_time
+    # Return detections as they are (unsorted)
+    return detections, inference_time
 
 
 
