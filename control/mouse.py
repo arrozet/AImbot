@@ -14,18 +14,23 @@ def aim_and_shoot(mouse, target):
 
     target_x, target_y = target
 
-    # Mueve el ratón hacia el objetivo
-    print("Target ({},{}) | Screen center {}".format(target_x,target_y, cfg.SCREEN_CENTER))
-    print("Offset ({},{})".format(cfg.SCREEN_CENTER[0]-target_x, cfg.SCREEN_CENTER[1]-target_y))
-    #mouse.mouse_move(target_x, target_y, True)
+    # Calcula el desplazamiento relativo desde el centro de la pantalla
+    offset_x = target_x - cfg.SCREEN_CENTER[0]
+    offset_y = target_y - cfg.SCREEN_CENTER[1]
 
-    """    # Verifica si el centro de la pantalla está sobre el objetivo
-    center_x, center_y = self.get_screen_center()
+    print("Target ({},{}) | Screen center {}".format(target_x, target_y, cfg.SCREEN_CENTER))
+    print("Offset ({},{})".format(offset_x, offset_y))
+
+    # Mueve el ratón usando el desplazamiento relativo
+    mouse.mouse_move(offset_x, offset_y, True)  # True indica movimiento relativo
+
+    # Verifica si el centro de la pantalla está sobre el objetivo
+    center_x, center_y = cfg.SCREEN_CENTER
 
     if abs(center_x - target_x) <= cfg.TOLERANCE and abs(center_y - target_y) <= cfg.TOLERANCE:
         # Si el centro está dentro de la tolerancia, dispara
-        self.left_click_mouse()
+        mouse.mouse_left_click()
         print(f"Aimed and shot at target ({target_x}, {target_y}).")
     else:
         print(f"Target not aligned with screen center. Mouse at ({center_x}, {center_y}), Target at ({target_x}, {target_y}).")
-    """
+    

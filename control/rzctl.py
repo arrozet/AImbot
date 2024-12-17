@@ -49,7 +49,7 @@ class RazerMouse():
         """
         return self.init()
         
-    def mouse_move(self, x, y, absolute):
+    def mouse_move(self, x, y, relative_to_center):
         """if going from point, x and y will be the offset from current mouse position
 	       otherwise it will be a number in range of 1 to 65536, where 1, 1 is top left of screen
 	       if using multiple monitors the input values remain the same, but outcome different, i just don't recommend bothering with this bs
@@ -60,7 +60,7 @@ class RazerMouse():
             y (int)
             from_start_point (bool)
         """
-        self.mouse_move(x, y, absolute)
+        self.mouse_move(x, y, relative_to_center)
 
     def mouse_click(self, click_mask):
         """
@@ -68,6 +68,15 @@ class RazerMouse():
             click_mask (MOUSE_CLICK):
         """
         self.mouse_click(click_mask)
+
+    def mouse_left_click(self):
+        """
+        Args:
+            click_mask (MOUSE_CLICK):
+        """
+        self.mouse_click(MOUSE_CLICK.LEFT_DOWN)
+        self.mouse_click(MOUSE_CLICK.LEFT_UP)
+
         
     def keyboard_input(self, scan_code, up_down):
         """

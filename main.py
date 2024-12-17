@@ -55,7 +55,7 @@ def main():
     
     # Inicializa la cámara con BetterCam
     camera = bettercam.create(device_idx=0, output_idx=0)
-    camera.start()
+    camera.start(target_fps=cfg.TARGET_FPS)
 
 
     if(cfg.DRAW):
@@ -139,7 +139,7 @@ def main():
                         cv2.circle(frame, (head_x, head_y), 5, color, -1)
 
             # Disparo al que está más cerca si hay deteccione
-            if detections:
+            if head_positions != []:
                 mouse.aim_and_shoot(razer_mouse, head_positions[0])
 
             # Muestro el frame
