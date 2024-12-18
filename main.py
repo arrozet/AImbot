@@ -131,7 +131,6 @@ def main():
                         frame, label, (x_min, y_min - 10),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1
                     )
-
                     # Marca la cabeza
                     if(head_x != -1 and head_y != -1):
                         if detected_by_sift:
@@ -139,7 +138,7 @@ def main():
                         cv2.circle(frame, (head_x, head_y), 5, color, -1)
 
             # Disparo al que está más cerca si hay deteccione
-            if head_positions != []:
+            if head_positions != [] and cfg.SHOOTING and cfg.AIMING:
                 mouse.aim_and_shoot(razer_mouse, head_positions[0])
 
             # Muestro el frame

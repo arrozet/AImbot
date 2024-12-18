@@ -39,10 +39,10 @@ def detect_targets(frame, screen_center=(320, 320)):
         frame = frame.to('cuda')
 
     # Perform inference using the YOLO model
-    results = model.predict(source=frame, conf=cfg.MODEL_CONFIDENCE_THRESHOLD, classes=cfg.MODEL_CLASSES, verbose=False)
+    results = model.predict(source=frame, conf=cfg.MODEL_CONFIDENCE_THRESHOLD, classes=cfg.MODEL_CLASSES, verbose=cfg.VERBOSE)
     stats = results[0].speed  # Extract processing times (ms)
     inference_time = stats['inference'] / 1000.0  # Convert milliseconds to seconds
-
+    
     detections = []
     ref_x, ref_y = screen_center  # Center of reference in the resized image (640x640)
 

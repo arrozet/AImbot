@@ -63,9 +63,13 @@ ENABLE_MASK = False  # Whether to use the mask during screen capture
 DLL_PATH = "./control/rzctl.dll"
 WEIGHT_FILE = "sunxds_0.7.1.pt"
 WEIGHTS_PATH = "./detection/weights/" + WEIGHT_FILE
-TOLERANCE = 5
+IMAGES_PATH = "./utils/images/"
+TOLERANCE = 3
 TITLE_TEXT = "User View (Left) | Machine View (Right)"
 DRAW = True
+AIMING = False
+SHOOTING = False
+VERBOSE = True
 
 # Sensibilidad del ratón (ajusta según la configuración del juego)
 MOUSE_SENSITIVITY = 1  # Por ejemplo
