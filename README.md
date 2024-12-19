@@ -82,7 +82,7 @@ The author is not responsible for any misuse of this program. Furthermore, the a
 
 ## Acknowledgments
 
-- [BetterCam](https://github.com/RootKit-Org/BetterCam)
-- [YOLO](https://github.com/ultralytics/ultralytics)
-- [SunOne Aimbot](https://github.com/SunOner/sunone_aimbot)
+- [BetterCam](https://github.com/RootKit-Org/BetterCam)  
+- [YOLO](https://github.com/ultralytics/ultralytics)  
+- [SunOne Aimbot](https://github.com/SunOner/sunone_aimbot) - Special thanks to SunOne for the Razer mouse DLL file and the weights used in the model.
 
