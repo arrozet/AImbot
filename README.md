@@ -85,4 +85,16 @@ The author is not responsible for any misuse of this program. Furthermore, the a
 - [BetterCam](https://github.com/RootKit-Org/BetterCam)  
 - [YOLO](https://github.com/ultralytics/ultralytics)  
 - [SunOne Aimbot](https://github.com/SunOner/sunone_aimbot) - Special thanks to SunOne for the Razer mouse DLL file and the weights used in the model.
+- [rzctl](https://github.com/Sadmeme/rzctl) - For providing the Razer mouse controller library used in this project.
 
+
+## Note about Windows Defender
+
+The dynamic library included in the repository, `rzctl.dll`, may be flagged as a virus by Windows Defender (false positive). This file is sourced from [rzctl](https://github.com/Sadmeme/rzctl), an open-source project. If you are concerned about its content, please review the code yourself.
+
+To temporarily disable Windows Defender and test the code (if you have a Razer mouse), follow these steps:
+
+1. Navigate to **Windows Security > Virus & threat protection settings > Manage settings**.
+2. Turn off **Real-time protection**.
+
+Once testing is complete, you can re-enable real-time protection.
