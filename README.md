@@ -1,4 +1,4 @@
-# AI-based aimbot for FPS games 
+# CV-based aimbot for FPS games 
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/arrozet/AImbot/main/!aux/presentation/images/gif/cs2-big.gif" alt="AI-based Aimbot">
