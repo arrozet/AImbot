@@ -1,0 +1,30 @@
+### Model Information
+
+Base model: YOLOv11
+
+#### Classes Analyzed:
+- Player
+- Bot
+- Weapon
+- Outline
+- Dead Body
+- Hideout Target (Human)
+- Hideout Target (Balls)
+- Head
+- Smoke
+- Fire
+- Third Person
+
+#### Summary of Model Features:
+- Extensive dataset: the model has been trained on diverse datasets, including datasets for FPS games, third-person games, and unreleased titles.
+- Game-specific updates: added datasets for popular games, including:
+  - First-Person Shooters: Warface, Destiny 2, Battlefield (all series), Rainbow Six Siege, CS2, The Finals, and many more.
+  - Third-Person Shooters: Fortnite, Grand Theft Auto V, and many more.
+- Compatibility:
+  - Python: optimized for use with `ultralytics` version 8.30.0 or higher.
+- Lightweight version (_UP):
+  - Uses smaller image sizes (320) and fewer layers for improved speed and compatibility with less powerful hardware.
+
+#### Export Configuration:
+- Image size: 640 (standard version)
+- Image size: 320 (_UP version), specifically designed to ensure compatibility with lower-end machines.
