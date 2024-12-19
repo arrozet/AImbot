@@ -4,47 +4,48 @@ import cv2
 import torch
 import utils.config as cfg
 
+"""
+This script captures and processes frames from the screen using BetterCam.
+It applies optional masking, histogram equalization, resizing, and normalization to prepare the frame for model inference.
+"""
+
 def process_frame(frame, region=None, use_mask=False, mask_coords=None, target_size=cfg.TARGET_SIZE):
     """
-    Captura un frame de la pantalla utilizando BetterCam y aplica preprocesamiento.
+    Captures a frame from the screen using BetterCam and applies preprocessing.
 
     Parameters:
-    - region: Región específica para capturar (x, y, width, height). Si None, captura toda la pantalla.
-    - use_mask: Si True, aplica una máscara para eliminar áreas no relevantes.
-    - mask_coords: Coordenadas absolutas de la máscara (x_start, y_start, x_end, y_end).
-    - target_size: Tamaño al que se debe redimensionar la imagen (width, height).
+    - frame (array): The input frame to process.
+    - region (tuple, optional): Specific region to capture (x, y, width, height). If None, captures the entire screen.
+    - use_mask (bool, optional): If True, applies a mask to block irrelevant areas.
+    - mask_coords (tuple, optional): Absolute coordinates of the mask (x_start, y_start, x_end, y_end).
+    - target_size (tuple, optional): Size to resize the image to (width, height).
 
     Returns:
-    - frame_original: Imagen original capturada (NumPy array).
-    - frame_processed: Imagen procesada lista para el modelo (tensor de PyTorch).
+    - frame_original (array): The original captured image (NumPy array).
+    - frame_processed (torch.Tensor): The processed image ready for the model (PyTorch tensor).
     """
     try:
-        # Convertir a NumPy
+        # Convert to NumPy array
         frame_original = np.array(frame, dtype=np.uint8)
 
-        # Aplica máscara si se especifica
+        # Apply mask if specified
         if use_mask and mask_coords is not None:
             x_start, y_start, x_end, y_end = mask_coords
-            frame_original[y_start:y_end, x_start:x_end] = 0  # Bloquea la región especificada
+            frame_original[y_start:y_end, x_start:x_end] = 0  # Block the specified region
 
-        # Ecualiza el histograma del canal de luminosidad
+        # Equalize the histogram of the luminance channel
         frame_yuv = cv2.cvtColor(frame_original, cv2.COLOR_BGR2YUV)
-        frame_yuv[:, :, 0] = cv2.equalizeHist(frame_yuv[:, :, 0])  # Ecualiza solo el canal Y
+        frame_yuv[:, :, 0] = cv2.equalizeHist(frame_yuv[:, :, 0])  # Equalize only the Y channel
         frame_equalized = cv2.cvtColor(frame_yuv, cv2.COLOR_YUV2BGR)
-        
 
-        # Redimensionar para el modelo
+        # Resize for the model
         frame_resized = cv2.resize(frame_equalized, target_size)
 
-        # Normalizar y convertir a tensor
+        # Normalize and convert to tensor
         frame_processed = torch.from_numpy(frame_resized).float().div(255).permute(2, 0, 1)
-        frame_processed = frame_processed.unsqueeze(0)  # Añadir batch dimension
+        frame_processed = frame_processed.unsqueeze(0)  # Add batch dimension
 
-        return frame_equalized,frame_processed
+        return frame_equalized, frame_processed
     except Exception as e:
-        print(f"Error en capture_screen: {e}")
+        print(f"Error in process_frame: {e}")
         return None, None
-
-
-
-
