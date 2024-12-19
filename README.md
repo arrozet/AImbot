@@ -42,21 +42,15 @@ This project implements a real-time detection and interaction system utilizing B
 
 ## Usage
 
-1. **Connect the camera**:
+1. **Connect the Razer Mouse** (if using automated interaction):
 
-   - Ensure that your camera is properly connected and recognized by the system.
-
-2. **Connect the Razer Mouse** (if using automated interaction):
-
-   - Ensure that your Razer mouse is connected and that the `rzctl` library is properly configured to control it.
-
-3. **Run the Application**:
+2. **Run the Application**:
 
    ```bash
    python main.py
    ```
 
-4. **Controls**:
+3. **Controls**:
 
    - Press `Ctrl + Q` to pause and resume the detection.
    - Press `Ctrl + T` to quit the application.
