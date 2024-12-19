@@ -1,6 +1,8 @@
 # AI-based aimbot for FPS games 
 
-![AI-based Aimbot](a)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/arrozet/AImbot/main/!aux/presentation/images/gif/cs2-big.gif" alt="AI-based Aimbot">
+</p>
 
 This project implements a real-time detection and interaction system utilizing BetterCam, YOLO, and a Razer mouse controller. It processes video frames to detect targets and can perform actions such as aiming and shooting to the head.
 
