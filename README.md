@@ -9,7 +9,7 @@ This project implements a real-time detection and interaction system utilizing B
 ## Features
 
 - **Real-time detection**: processes video frames in real-time to detect targets using the YOLO model.
-- **Head position identification**: Identifies head positions within detected targets, utilizing SIFT as a fallback method.
+- **Head position identification**: identifies head positions within detected targets, utilizing SIFT as a fallback method.
 - **Automated interaction**: optionally aims and performs actions (e.g., shooting) at detected targets using a Razer mouse controller.
 - **Performance monitoring**: calculates and displays average FPS and inference time per frame.
 - **Visualization**: displays bounding boxes, labels, and head markers on the video feed for visual debugging.
@@ -60,11 +60,11 @@ This project implements a real-time detection and interaction system utilizing B
 The system can be configured through the `config.py` file. Key parameters include:
 
 - `TARGET_FPS`: sets the target frames per second for the camera.
-- `DRAW`: Enables or disables visualization of detections.
-- `SHOOTING`: Enables or disables the shooting functionality.
-- `AIMING`: Enables or disables the aiming functionality.
-- `WEIGHTS_PATH`: Path to the YOLO model weights.
-- `DLL_PATH`: Path to the Razer mouse controller DLL.
+- `DRAW`: enables or disables visualization of detections.
+- `SHOOTING`: enables or disables the shooting functionality.
+- `AIMING`: enables or disables the aiming functionality.
+- `WEIGHTS_PATH`: path to the YOLO model weights.
+- `DLL_PATH`: path to the Razer mouse controller DLL.
 
 ## Dependencies
 
