@@ -42,7 +42,7 @@ def handle_keyboard_events(paused):
 
 # Screen settings
 SCREEN_SIZE = (1920, 1200)  # Full screen resolution
-TARGET_SIZE = (640, 640)    # Model input size
+TARGET_SIZE = (320, 320)    # Model input size
 SCREEN_CENTER = (SCREEN_SIZE[0] // 2, SCREEN_SIZE[1] // 2)  # Center of the processed screen image
 TARGET_CENTER = (TARGET_SIZE[0] // 2, TARGET_SIZE[1] // 2)  # Center of the model's input image
 DISPLAY_SIZE = (SCREEN_SIZE[0] // 1, SCREEN_SIZE[1] // 1)  # Display size for debugging
@@ -62,7 +62,7 @@ MODEL_CLASSES = [0, 7]  # Classes: 0 = Person, 7 = Head
 # General settings
 ENABLE_MASK = False  # Whether to use the mask during screen capture
 DLL_PATH = "./control/rzctl.dll"  # Path to the DLL used for controlling input
-WEIGHT_FILE = "sunxds_0.7.1.pt"  # File name of the weights used by the detection model
+WEIGHT_FILE = "sunxds_0.7.0_up.pt"  # File name of the weights used by the detection model
 WEIGHTS_PATH = "./detection/weights/" + WEIGHT_FILE  # Full path to the weight file
 IMAGES_PATH = "./utils/images/"  # Path to the images used in the project
 TOLERANCE = 3  # Tolerance value for adjustments
