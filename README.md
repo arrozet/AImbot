@@ -27,7 +27,7 @@ This project implements a real-time detection and interaction system utilizing B
 
    ```bash
    python -m venv finally-getting-good-at-games
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   finally-getting-good-at-games\Scripts\activate # On Linux: source finally-getting-good-at-games/bin/activate
    ```
 
 3. **Install the required dependencies**:
