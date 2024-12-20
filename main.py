@@ -129,7 +129,7 @@ def main():
                         cv2.circle(frame, (head_x, head_y), 5, color, -1)
 
             # Aim and shoot at the closest detected head if conditions are met
-            if head_positions and cfg.SHOOTING and cfg.AIMING:
+            if head_positions:
                 mouse.aim_and_shoot(razer_mouse, head_positions[0])
 
             if cfg.DRAW:

@@ -32,12 +32,13 @@ def aim_and_shoot(mouse, target):
     print("Offset ({},{})".format(offset_x, offset_y))
 
     # Move the mouse using the relative offset
-    mouse.mouse_move(offset_x, offset_y, True)  # True indicates relative movement
+    if cfg.AIMING:
+        mouse.mouse_move(offset_x, offset_y, True)  # True indicates relative movement
 
     # Verify if the screen center is within the tolerance of the target
     center_x, center_y = cfg.SCREEN_CENTER
 
-    if abs(center_x - target_x) <= cfg.TOLERANCE and abs(center_y - target_y) <= cfg.TOLERANCE:
+    if cfg.SHOOTING and abs(center_x - target_x) <= cfg.TOLERANCE and abs(center_y - target_y) <= cfg.TOLERANCE:
         # If within tolerance, shoot
         mouse.mouse_left_click()
         print(f"Aimed and shot at target ({target_x}, {target_y}).")
