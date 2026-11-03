@@ -1,1 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="22" x2="18" y1="12" y2="12"/><line x1="6" x2="2" y1="12" y2="12"/><line x1="12" x2="12" y1="6" y2="2"/><line x1="12" x2="12" y1="22" y2="18"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <path d="M32 15V7" stroke="#aab0bf" stroke-width="3.5" stroke-linecap="round"/>
+  <circle cx="32" cy="6" r="4" fill="#ef4444"/>
+  <rect x="3" y="29" width="8" height="15" rx="3" fill="#7c8293"/>
+  <rect x="53" y="29" width="8" height="15" rx="3" fill="#7c8293"/>
+  <rect x="8" y="13" width="48" height="47" rx="13" fill="#c5cad6"/>
+  <path d="M15 17.5l11 4M49 17.5l-11 4" stroke="#5b6070" stroke-width="4" stroke-linecap="round"/>
+  <rect x="14" y="25" width="36" height="29" rx="9" fill="#15111c"/>
+  <circle cx="32" cy="39.5" r="8.5" fill="none" stroke="#ef4444" stroke-width="3.5"/>
+  <path d="M32 28v6M32 45v6M20.5 39.5h6M37.5 39.5h6" stroke="#ef4444" stroke-width="3.5" stroke-linecap="round"/>
+  <circle cx="32" cy="39.5" r="2.4" fill="#fecaca"/>
+</svg>
